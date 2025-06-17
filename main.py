@@ -16,6 +16,11 @@ def main():
     clock = pygame.time.Clock()
     dt = 0
     score = 0
+    lives = 3
+    respawning = False
+    respawn_timer = 0
+    invulnerable = False
+    invulnerable_timer = 0
 
     # creates objects into groups
     updatable = pygame.sprite.Group()
@@ -34,19 +39,50 @@ def main():
     asteroid_field = AsteroidField()
 
     # creates a forever loop that will allow to exit the game
-    # detects collision of player and asteroid, will result in game over
-    # detects collision of bullet and asteroid, will kill both if True 
-    # also update the screen to always show black foreground
     while True:
         for event in pygame.event.get():
             if event.type == pygame.QUIT:
                 return
             
-        updatable.update(dt)
-        for asteroid in asteroids:
-            if asteroid.detect_collision(player):
-                print("Game over!")
-                sys.exit()
+        # checks time in order to determine respawn timer, as well as invuln timer
+        current_time = pygame.time.get_ticks()
+        if respawning and current_time > respawn_timer:
+            respawning = False
+        if invulnerable and current_time > invulnerable_timer:
+            invulnerable = False
+            
+        # checks collision and handles lives/respawning/invulnerability   
+        if respawning:
+        # Update everything except the player
+            for obj in updatable:
+                if obj != player:
+                    obj.update(dt)
+        else:
+            # Update everything normally
+            updatable.update(dt)
+            for asteroid in asteroids:
+                if not invulnerable and not respawning and asteroid.detect_collision(player):
+                    lives -= 1 #removes a life when hit
+                    print(f"Hit! Lives remaining: {lives}")
+            
+                    if lives > 0:
+                        # Start respawn sequence
+                        respawning = True
+                        respawn_timer = pygame.time.get_ticks() + 2000  # 2 second delay
+                
+                        # Reset player position to center
+                        player.position = pygame.Vector2(SCREEN_WIDTH / 2, SCREEN_HEIGHT / 2)
+                        player.velocity = pygame.Vector2(0, 0)  # Stop player movement
+                            
+                        # Make player invulnerable
+                        invulnerable = True
+                        invulnerable_timer = pygame.time.get_ticks() + 3000  # 3 seconds
+                            
+                    else:
+                        print("Game over!")
+                        sys.exit()
+        
+                    break  # Exit the loop since we found a collision
 
         for obj in asteroids:
             for obj2 in shots:
@@ -60,8 +96,10 @@ def main():
         # adds score counter to top left hopefully
         score_text = font.render(f"Score: {score}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))  # Position in top-left corner
-        
+
         for obj in drawable:
+            if obj == player and respawning:
+                continue # doesn't show player during respawn
             obj.draw(screen)
         pygame.display.flip()
         
