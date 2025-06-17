@@ -1,6 +1,8 @@
 import pygame
 from constants import *
 from player import *
+from asteroid import *
+from asteroidfield import *
 
 
 def main():
@@ -12,8 +14,13 @@ def main():
     # creates player into groups and places at center of screen
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
+    asteroids = pygame.sprite.Group()
+
+    Asteroid.containers = (updatable, drawable, asteroids)
+    AsteroidField.containers = (updatable,)
     Player.containers = (updatable, drawable)
     player = Player(SCREEN_WIDTH /2, SCREEN_HEIGHT / 2)
+    asteroid_field = AsteroidField()
 
     # creates a forever loop that will allow to exit the game 
     # also update the screen to always show black foreground
