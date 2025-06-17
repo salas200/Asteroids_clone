@@ -8,11 +8,14 @@ from circleshape import *
 from shot import *
 
 
+
 def main():
     pygame.init()
+    font = pygame.font.Font(None, 36)
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
+    score = 0
 
     # creates objects into groups
     updatable = pygame.sprite.Group()
@@ -50,8 +53,14 @@ def main():
                 if obj.detect_collision(obj2):
                     obj.split()
                     obj2.kill()
+                    score += 1
 
         screen.fill("black")
+
+        # adds score counter to top left hopefully
+        score_text = font.render(f"Score: {score}", True, (255, 255, 255))
+        screen.blit(score_text, (10, 10))  # Position in top-left corner
+        
         for obj in drawable:
             obj.draw(screen)
         pygame.display.flip()
@@ -59,6 +68,8 @@ def main():
 
         # Limits the framerate to 60 fps
         dt = clock.tick(60) / 1000
+
+        
 
 
     print("Starting Asteroids!")
