@@ -93,9 +93,13 @@ def main():
 
         screen.fill("black")
 
-        # adds score counter to top left hopefully
+        # adds score counter to top left corner
         score_text = font.render(f"Score: {score}", True, (255, 255, 255))
         screen.blit(score_text, (10, 10))  # Position in top-left corner
+
+        # Add lives counter to bottom-left corner
+        lives_text = font.render(f"Lives: {lives}", True, (255, 255, 255))
+        screen.blit(lives_text, (10, SCREEN_HEIGHT - 40))  # Position in bottom-left corner
 
         for obj in drawable:
             if obj == player and respawning:
