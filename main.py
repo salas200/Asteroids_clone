@@ -25,12 +25,14 @@ def main():
     AsteroidField.containers = (updatable,)
     Player.containers = (updatable, drawable)
     Shot.containers = (updatable, drawable, shots)
-    
+
     # places player into center screen and places asteroids
     player = Player(SCREEN_WIDTH /2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
 
-    # creates a forever loop that will allow to exit the game 
+    # creates a forever loop that will allow to exit the game
+    # detects collision of player and asteroid, will result in game over
+    # detects collision of bullet and asteroid, will kill both if True 
     # also update the screen to always show black foreground
     while True:
         for event in pygame.event.get():
@@ -42,6 +44,12 @@ def main():
             if asteroid.detect_collision(player):
                 print("Game over!")
                 sys.exit()
+
+        for obj in asteroids:
+            for obj2 in shots:
+                if obj.detect_collision(obj2):
+                    obj.kill()
+                    obj2.kill()
 
         screen.fill("black")
         for obj in drawable:
