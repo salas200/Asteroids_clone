@@ -8,6 +8,7 @@ def main():
     screen = pygame.display.set_mode((SCREEN_WIDTH, SCREEN_HEIGHT))
     clock = pygame.time.Clock()
     dt = 0
+    # creates player at center of screen
     player = Player(SCREEN_WIDTH /2, SCREEN_HEIGHT / 2)
 
     # creates a forever loop that will allow to exit the game 
@@ -17,12 +18,14 @@ def main():
             if event.type == pygame.QUIT:
                 return
             
+        player.update(dt)    
+
         screen.fill("black")
         player.draw(screen)
         pygame.display.flip()
         
 
-        # Limits the framerate
+        # Limits the framerate to 60 fps
         dt = clock.tick(60) / 1000
 
 
