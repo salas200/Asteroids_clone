@@ -67,6 +67,61 @@ class Player(CircleShape):
             shot.velocity = shot.velocity * PLAYER_SHOOT_SPEED
             self.clock = PLAYER_SHOOT_COOLDOWN
 
+    def point_in_triangle(self, point):
+        """Check if a point is inside the triangle using barycentric coordinates"""
+        triangle_points = self.triangle()
+        v0 = triangle_points[2] - triangle_points[0]  # c - a
+        v1 = triangle_points[1] - triangle_points[0]  # b - a  
+        v2 = point - triangle_points[0]               # point - a
+
+        dot00 = v0.dot(v0)
+        dot01 = v0.dot(v1)
+        dot02 = v0.dot(v2)
+        dot11 = v1.dot(v1)
+        dot12 = v1.dot(v2)
+
+        inv_denom = 1 / (dot00 * dot11 - dot01 * dot01)
+        u = (dot11 * dot02 - dot01 * dot12) * inv_denom
+        v = (dot00 * dot12 - dot01 * dot02) * inv_denom
+
+        return (u >= 0) and (v >= 0) and (u + v <= 1)
+
+    def collides_with_circle(self, circle_center, circle_radius):
+        """Check collision between triangle and circle"""
+        # Check if circle center is inside triangle
+        if self.point_in_triangle(circle_center):
+            return True
+        
+        # Check distance from circle center to each triangle edge
+        triangle_points = self.triangle()
+        
+        for i in range(3):
+            edge_start = triangle_points[i]
+            edge_end = triangle_points[(i + 1) % 3]
+            
+            # Find closest point on edge to circle center
+            edge_vec = edge_end - edge_start
+            to_circle = circle_center - edge_start
+            
+            if edge_vec.length_squared() == 0:
+                closest_point = edge_start
+            else:
+                t = max(0, min(1, to_circle.dot(edge_vec) / edge_vec.length_squared()))
+                closest_point = edge_start + t * edge_vec
+            
+            # Check if circle overlaps with this closest point
+            if closest_point.distance_to(circle_center) <= circle_radius:
+                return True
+        
+        return False
+
+    # Override the collision method from CircleShape
+    def detect_collision(self, other):
+        """Override to use triangular collision detection"""
+        if hasattr(other, 'position') and hasattr(other, 'radius'):
+            return self.collides_with_circle(other.position, other.radius)
+        return False
+
 
 
 
