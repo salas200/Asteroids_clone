@@ -84,11 +84,11 @@ def main():
         
                     break  # Exit the loop since we found a collision
 
-        for roid in asteroids:
-            for shot in shots:
-                if roid.detect_collision(shot):
-                    roid.split()
-                    shot.kill()
+        for r in asteroids:
+            for s in shots:
+                if r.detect_collision(s):
+                    r.split()
+                    s.kill()
                     score += 1
 
         screen.fill("black")
