@@ -5,6 +5,7 @@ from player import *
 from asteroid import *
 from asteroidfield import *
 from circleshape import *
+from shot import *
 
 
 def main():
@@ -13,14 +14,19 @@ def main():
     clock = pygame.time.Clock()
     dt = 0
 
-    # creates player into groups and places at center of screen
+    # creates objects into groups
     updatable = pygame.sprite.Group()
     drawable = pygame.sprite.Group()
     asteroids = pygame.sprite.Group()
+    shots = pygame.sprite.Group()
 
+    # containers for groups
     Asteroid.containers = (updatable, drawable, asteroids)
     AsteroidField.containers = (updatable,)
     Player.containers = (updatable, drawable)
+    Shot.containers = (updatable, drawable, shots)
+    
+    # places player into center screen and places asteroids
     player = Player(SCREEN_WIDTH /2, SCREEN_HEIGHT / 2)
     asteroid_field = AsteroidField()
 
